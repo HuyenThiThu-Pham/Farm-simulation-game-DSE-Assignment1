@@ -1,0 +1,44 @@
+package students.items;
+
+public class Grain extends Food {
+    private static int grainCount = 0;
+
+    public Grain() {
+        super(2, 6, 2);
+        grainCount++;
+    }
+
+    public static int getGenerationCount() {
+        return grainCount;
+    }
+
+    /**
+     * Calculates the value of grain. (Only maturation grain contribute to their value)
+     * If the grain is fully grown (past maturation age), returns its monetary value.
+     * Otherwise, return 0.
+     * @return the value of the grain.
+     */
+    @Override
+    public double getValue() {
+        if (getAge() >= getMaturationAge()) {
+            return getMonetaryValue();
+        } else {
+            return 0; // Not fully grown yet
+        }
+    }
+
+    /**
+     * Returns the string representation of grain.
+     * If the age is below maturation, it's represented as "g",
+     * otherwise as "G".
+     * @return The string representation of the grain.
+     */
+    @Override
+    public String toString() {
+        if (getAge() >= getMaturationAge()) {
+            return "G"; 
+        } else {
+            return "g"; 
+        }
+    }
+}

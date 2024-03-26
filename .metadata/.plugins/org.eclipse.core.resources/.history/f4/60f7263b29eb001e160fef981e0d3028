@@ -1,0 +1,136 @@
+package students;
+import students.items.*;
+import java.util.Random;
+
+
+public class Field {
+	private Item[][] field;
+    private final int height;
+    private final int width;
+    private final Random random;
+    
+	
+	public Field(int width, int height)
+	{
+		this.height = height;
+    	this.width = width; 
+        this.field  = new Item[width][height]; //2D array named field, each element of this array can hold an Item object.
+        this.random = new Random();
+        
+        //Upon creation, the height and width of the field is passed in, and field created with new Soil. 
+        // Initialize the field with Soil 
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                field[i][j] = new Soil();
+            }
+        }
+
+	}
+	
+	public void tick() {
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[i].length; j++) {
+                field[i][j].tick(); //call tick() for each element in the field.
+                
+                if (field[i][j] instanceof Soil && Math.random() < 0.2) { 
+                    field[i][j] = new Weed();//20% of the time that location will turn into a new Weed.
+                } else if (field[i][j].died()) {
+                    field[i][j] = new UntilledSoil();
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder grid = new StringBuilder();
+
+        // Append the column numbers
+        grid.append("  ");
+        for (int col = 1; col <= height; col++) {
+            grid.append(col).append(" ");
+        }
+        grid.append("\n");
+
+        // Append the rows with their contents
+        for (int row = 0; row < width; row++) {
+            grid.append(row + 1).append(" ");
+            for (int col = 0; col < height; col++) {
+            	if (field[row][col] == null) {
+                    grid.append(". ");
+                } else {
+                    grid.append(field[row][col]).append(" ");
+                }
+            }
+            grid.append("\n");
+        }
+
+        return grid.toString();
+    }
+
+
+    //replace the existing item at the specified location with a new instance of the Soil item.
+    //for planting
+    public void till(int row, int col) {
+        field[row][col] = new Soil();
+    }
+
+    public Item get(int row, int col) {
+        return field[row][col];
+    }
+
+    //plan a given item at a specified location in the farm field.
+    public void plant(int row, int col, Item item) {
+        field[row][col] = item;
+    }
+    
+    //calculate and return the total monetary value of all items present in the farm field
+    public double getValue() {
+        double totalValue = 0;
+        for (Item[] row : field) {
+            for (Item item : row) {
+                totalValue += item.getValue();
+            }
+        }
+        return totalValue;
+    }
+
+    public String getSummary() {
+        int apples = 0, grain = 0, soil = 0, untilled = 0, weed = 0;
+        for (Item[] row : field) {
+            for (Item item : row) {
+                if (item instanceof Apple) {
+                    apples++;
+                } else if (item instanceof Grain) {
+                    grain++;
+                } else if (item instanceof Soil) {
+                    soil++;
+                } else if (item instanceof UntilledSoil) {
+                    untilled++;
+                } else if (item instanceof Weed) {
+                    weed++;
+                }
+            }
+        }
+        return "Apples:        " + apples + "\n" +
+               "Grain:         " + grain + "\n" +
+               "Soil:          " + soil + "\n" +
+               "Untilled:      " + untilled + "\n" +
+               "Weed:          " + weed + "\n" +
+               "For a total of $" + getValue() + "\n" +
+               "Total apples created: " + apples + "\n" +
+               "Total grain created: " + grain;
+    }
+
+	public int getWidth() {
+		return this.width;
+	}
+
+	public int getHeight() {
+		
+		return this.height;
+	}
+
+}
+
+

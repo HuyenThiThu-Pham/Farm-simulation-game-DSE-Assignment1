@@ -1,0 +1,51 @@
+package students.items;
+
+public class Apple extends Food {
+    private static int appleCount = 0; //to track the total number of instantiated apples.
+
+    public Apple() {
+        super(3, 5, 3); //maturation age, death age, and monetary value for apples.
+        appleCount++; //increment the count upon instantiation
+    }
+    
+    /**
+     * Gets the total number of apple objects that have been instantiated.
+     *
+     * @return the count of apple objects.
+     */
+    public static int getGenerationCount() {
+        return appleCount;
+    }
+
+    /**
+     * Calculates the value of apple. (Only maturation apples contribute to their value)
+     * If the apple is fully grown (past maturation age), returns its monetary value.
+     * Otherwise, return 0.
+     * @return the value of the apple.
+     */
+   
+    @Override
+    public double getValue() {
+        if (getAge() >= getMaturationAge()) {
+            return getMonetaryValue();
+        } else {
+            return 0; // Not fully grown yet
+        }
+    }
+    
+    /**
+     * Returns the string representation of an apple.
+     * If the age is below maturation, it's represented as "a",
+     * otherwise as "A".
+     * @return The string representation of the apple.
+     */
+    @Override
+    public String toString() {
+        if (getAge() >= getMaturationAge()) {
+            return "A"; 
+        } else {
+            return "a"; 
+        }
+    }
+}
+
