@@ -1,0 +1,112 @@
+package students;
+import java.util.Scanner;
+import students.items.*;
+import students.Field;
+
+public class Farm {
+	private Field field; // Field object to represent the farm field
+    private double balance; // Player's balance
+    private Scanner scanner; // Scanner object to read user input
+	
+    // Constructor to initialize the Farm object
+	public Farm(int fieldWidth, int fieldHeight, int startingFunds)
+	{
+		this.field = new Field(fieldWidth, fieldHeight); // Create a new Field object with given dimensions
+        this.balance = startingFunds; // Initialize the player's balance
+        this.scanner = new Scanner(System.in); // Initialize the scanner to read user input
+	}
+	
+	// Method to run the farm simulation
+	public void run()
+	{
+		// Loop until the player decides to quit
+        while (true) {
+            // Display the current state of the field and player's balance
+            System.out.println(field);
+            System.out.println("\nBank balance: $" + balance + "\n");
+            System.out.println("Enter your next action:");
+            System.out.println("  t x y: till");
+            System.out.println("  h x y: harvest");
+            System.out.println("  p x y: plant");
+            System.out.println("  s: field summary");
+            System.out.println("  w: wait");
+            System.out.println("  q: quit");
+
+            String action = scanner.nextLine(); // Read user input for the next action
+            String[] parts = action.split(" "); // Split the input into parts
+
+            // Check if the user wants to quit
+            if (parts[0].equals("q")) {
+                System.out.println("Quitting the game...");
+                break;
+            }
+
+            try {
+            	// Validate user input and perform the action based on the command
+            	if (parts[0].equals("t") || parts[0].equals("h") || parts[0].equals("p")) {
+            	    if (parts.length != 3) {
+            	        throw new IllegalArgumentException("Invalid input format. Please enter three space-separated values.");
+            	    }
+            	    int x = Integer.parseInt(parts[1]);
+            	    int y = Integer.parseInt(parts[2]);
+
+            	    if (x < 1 || x > field.getWidth() || y < 1 || y > field.getHeight()) {
+            	        throw new IllegalArgumentException("Invalid location. Please enter coordinates within the field boundaries.");
+            	    }
+            	    performAction(parts[0].charAt(0), x-1, y-1); // correct location
+            	    // Update ages of items in the field
+                    field.tick();
+            	} else if (parts[0].equals("s")) {
+            	    System.out.println(field.getSummary()); // Print a summary of the field
+            	} else if (parts[0].equals("w")) {
+            	    field.tick(); // Wait, allowing items on the field to age
+            	} else {
+            	    System.out.println("Invalid command. Please try again.");
+            	}
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input format. Please enter valid numbers.");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    // Method to perform the specified action
+    private void performAction(char action, int x, int y) {
+    	// Perform action based on the command
+    	if (action == 't') {
+    	    field.till(x, y); // Till the soil at the specified location
+    	} else if (action == 'h') {
+    	    Food harvestedFood = field.harvest(x, y); // Harvest food at the specified location
+    	    if (harvestedFood != null) {
+    	        System.out.println("Sold '" + harvestedFood + "' for $" + harvestedFood.getValue());
+    	        balance += harvestedFood.getValue(); // Add the value of harvested food to the balance
+    	    }
+    	} else if (action == 'p') {
+    	    System.out.println("Enter:");
+    	    System.out.println(" - 'a' to buy an apple for $" + Apple.getCost());
+    	    System.out.println(" - 'g' to buy grain for $" + Grain.getCost());
+    	    String plantChoice = scanner.nextLine();
+    	    if (plantChoice.equals("a")) {
+    	        if (balance >= Apple.getCost()) {
+    	            field.plant(x, y, new Apple()); // Plant an apple at the specified location
+    	            balance -= Apple.getCost(); // Deduct the cost of the apple from the balance
+    	        } else {
+    	            System.out.println("You don't have enough funds to buy an apple.");
+    	        }
+    	    } else if (plantChoice.equals("g")) {
+    	        if (balance >= Grain.getCost()) {
+    	            field.plant(x, y, new Grain()); // Plant grain at the specified location
+    	            balance -= Grain.getCost(); // Deduct the cost of the grain from the balance
+    	        } else {
+    	            System.out.println("You don't have enough funds to buy grain.");
+    	        }
+    	    } else {
+    	        System.out.println("Invalid input. Please try again.");
+    	    }
+    	} else {
+    	    System.out.println("Invalid command. Please try again.");
+    	}
+
+    }
+}

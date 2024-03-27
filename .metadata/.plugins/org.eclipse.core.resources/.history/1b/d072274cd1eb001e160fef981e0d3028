@@ -1,0 +1,175 @@
+package students;
+import students.items.*;
+import java.util.Random;
+
+
+public class Field {
+	private Item[][] field;
+    private final int height;
+    private final int width;
+    private final Random random;
+    
+	
+	public Field(int width, int height)
+	{
+    	this.width = width; 
+    	this.height = height;
+        this.field  = new Item[width][height]; //2D array named field, each element of this array can hold an Item object.
+        this.random = new Random();
+        
+        //Upon creation, the height and width of the field is passed in, and field created with new Soil. 
+        // Initialize the field with Soil 
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                field[i][j] = new Soil();
+            }
+        }
+
+	}
+	
+	// Method to get the width of the field
+    public int getWidth() {
+        return width;
+    }
+
+    // Method to get the height of the field
+    public int getHeight() {
+        return height;
+    }
+	
+	public void tick() {
+        for (int i = 0; i < field.length; i++) {
+            for (int j = 0; j < field[i].length; j++) {
+                field[i][j].tick(); // Increase the age of each item
+                
+                //20% of the time that location will turn into a new Weed.
+                if (field[i][j] instanceof Soil && Math.random() <= 0.2) { 
+                    field[i][j] = new Weed();
+                } 
+                //20% of the time that location will turn into a new Weed.
+                else if (field[i][j].died()) {
+                    field[i][j] = new UntilledSoil(); 
+                }
+            }
+        }
+    }
+	
+	// Method to override the toString() method to print the field
+    @Override
+    public String toString() {
+        StringBuilder grid = new StringBuilder();
+
+        // Append the column numbers
+        grid.append("  ");
+        for (int col = 1; col <= width; col++) {
+            grid.append(col).append(" ");
+        }
+        grid.append("\n");
+
+        // Append the rows with their contents
+        for (int row = 0; row < height; row++) {
+            grid.append(row + 1).append(" ");
+            for (int col = 0; col < width; col++) {
+            	if (field[col][row] == null) {
+                    grid.append(". ");
+                } else {
+                    grid.append(field[col][row]).append(" ");
+                }
+            }
+            grid.append("\n");
+        }
+
+        return grid.toString();
+    }
+
+    // Method to get the item at the specified location
+    public Item get(int col, int row) {
+        if (isValidPosition(col, row)) {
+            return field[col][row];
+        } else {
+            throw new IllegalArgumentException("Invalid position.");
+        }
+    }
+    
+    // Method to till the soil at the specified location
+    public void till(int col, int row) {
+        if (isValidPosition(col, row)) {
+            field[col][row] = new Soil();
+        } else {
+            throw new IllegalArgumentException("Invalid position.");
+        }
+    }
+
+    
+
+    // Method to plant an item at the specified location
+    public void plant(int col, int row, Item item) {
+        if (isValidPosition(col, row)) {
+            field[col][row] = item;
+        } else {
+            throw new IllegalArgumentException("Invalid position.");
+        }
+    }
+    
+    // Method to check if a position is valid
+    private boolean isValidPosition(int col, int row) {
+        return col >= 0 && col < width && row >= 0 && row < height;
+    }
+
+    //calculate and return the total monetary value of all items present in the farm field
+    public double getValue() {
+        double totalValue = 0;
+        for (Item[] row : field) {
+            for (Item item : row) {
+                totalValue += item.getValue();
+            }
+        }
+        return totalValue;
+    }
+
+    public String getSummary() {
+        int apples = 0, grain = 0, soil = 0, untilled = 0, weed = 0;
+        for (Item[] row : field) {
+            for (Item item : row) {
+                if (item instanceof Apple) {
+                    apples++;
+                } else if (item instanceof Grain) {
+                    grain++;
+                } else if (item instanceof Soil) {
+                    soil++;
+                } else if (item instanceof UntilledSoil) {
+                    untilled++;
+                } else if (item instanceof Weed) {
+                    weed++;
+                }
+            }
+        }
+        return "Apples:        " + apples + "\n" +
+               "Grain:         " + grain + "\n" +
+               "Soil:          " + soil + "\n" +
+               "Untilled:      " + untilled + "\n" +
+               "Weed:          " + weed + "\n" +
+               "For a total of $" + getValue() + "\n" +
+               "Total apples created: " + apples + "\n" +
+               "Total grain created: " + grain;
+    }
+
+    public Food harvest(int x, int y) {
+        Item item = field[x][y]; // Adjust coordinates to array indices
+        if (item instanceof Food) {
+            Food food = (Food) item;
+            if (food.getAge() >= food.getMaturationAge()) {
+                field[x][y] = new Soil(); // Replace harvested food with soil
+                return food;
+            } else {
+                System.out.println("The food at location " + x + ", " + y + " is not yet mature for harvest.");
+            }
+        } else {
+            System.out.println("No food found at location " + x + ", " + y + ".");
+        }
+        return null; // Return null if no food is harvested
+    }
+}
+
+
+
