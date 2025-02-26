@@ -24,11 +24,11 @@ The Field class represents a farm grid where players plant and manage crops. It 
 ### 3. Farm System
 The Farm class manages gameplay, tracking the field state and the player's bank balance. Players interact through commands:
 
-t x y → Till soil at (x, y).
-h x y → Harvest mature crops at (x, y).
-p x y → Plant a crop (Apple or Grain) at (x, y).
-s → Display field summary.
-w → Skip turn (aging progresses).
-q → Quit game.
+- t x y → Till soil at (x, y).
+- h x y → Harvest mature crops at (x, y).
+- p x y → Plant a crop (Apple or Grain) at (x, y).
+- s → Display field summary.
+- w → Skip turn (aging progresses).
+- q → Quit game.
 ### 4. Custom Feature Extension
 This project includes an original new functionality beyond the base requirements, adding depth and strategy to the game. (Describe your specific feature here, e.g., a natural disaster system, crop interaction effects, or a new in-game mechanic.)
