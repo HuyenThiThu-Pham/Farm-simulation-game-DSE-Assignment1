@@ -31,4 +31,4 @@ The Farm class manages gameplay, tracking the field state and the player's bank 
 - w → Skip turn (aging progresses).
 - q → Quit game.
 ### 4. Custom Feature Extension
-This project includes an original new functionality beyond the base requirements, adding depth and strategy to the game. (Describe your specific feature here, e.g., a natural disaster system, crop interaction effects, or a new in-game mechanic.)
+This project includes an original new functionality beyond the base requirements, adding depth and strategy to the game. 
